@@ -13,16 +13,17 @@ from django.utils import timezone
 
 def login_view(request):
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
+        username = request.GET.get('username')
+        password = request.GET.get('password')
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
             login(request, user)
-            return redirect('')     #ログイン成功後のリダイレクト先を指定
+            token = generate_token(user)
+            return JsonResponse({'token': token})     #ログイン成功後のリダイレクト先を指定
 
         else:
-            return render(request, 'login.html', {'error': 'ユーザ名またはパスワードが間違っています'})
+            return JsonResponse({'error': 'ユーザ名またはパスワードが間違っています'})
     
     else:
         return render(request, 'login.html')    #login.htmlは仮
