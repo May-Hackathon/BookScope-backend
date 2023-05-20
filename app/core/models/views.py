@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from .forms import RegistrationForm
 from .forms import ProfileForm
+from django.contrib.auth.tokens import default_token_generator
 
 #ログイン情報取得
 from django.contrib.auth.decorators import login_required
@@ -27,6 +28,17 @@ def login_view(request):
     
     else:
         return render(request, 'login.html')    #login.htmlは仮
+    
+
+
+def generate_token(user):
+    """
+    ユーザに関連するトークンを生成、保存
+    """
+    token = default_token_generator.make_token(user)
+    user.token = token
+    user.save()
+
 
 
 def logout_view(request):

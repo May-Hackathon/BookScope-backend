@@ -60,6 +60,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    #フィールドを追加
+    token = models.CharField(max_length=255, blank=True, null=True)
+
     objects = UserManager()
 
     USERNAME_FIELD = "email"  # defines the field to use for logging in
