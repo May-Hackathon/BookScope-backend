@@ -74,7 +74,11 @@ def profile_edit(request):
 
         else:
             form = ProfileForm(instance=request.user.profile)
-        return render(request,'profile_edit.html', {'form': form})
+    # フォームの HTML レンダリング結果を取得        
+    form_data = {'form': form.as_p()}
+    return JsonResponse(form_data)
+    
+
 
 #ログイン情報取得
 @login_required
