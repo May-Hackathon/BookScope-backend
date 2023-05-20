@@ -24,7 +24,7 @@ class PostModelManager(DjangoModels.Manager):
 
     # ===================　検索系 ===================
 
-    def search_posts_by_title(self, title):
+    def search_posts_by_book_name(self, title):
         return self.filter(title__contains=title).all()
 
     def search_posts_by_writer_name(self, writer_name):
@@ -49,11 +49,12 @@ class Post(DjangoModels.Model):
         app_label = "core"
 
     comments = DjangoModels.ManyToManyField(
-        CoreModels.PostComment, related_name="posts"
+        CoreModels.PostComment,
+        related_name="posts"
     )
     likes = DjangoModels.ManyToManyField(CoreModels.PostLike, related_name="posts")
     tags = DjangoModels.ManyToManyField(CoreModels.PostTag, related_name="posts")
-
+    
     # 外部キー
     read_book = DjangoModels.ForeignKey(
         CoreModels.ReadBook, on_delete=DjangoModels.CASCADE, related_name="posts"
