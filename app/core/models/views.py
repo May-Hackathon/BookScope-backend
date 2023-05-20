@@ -5,6 +5,12 @@ from django.contrib.auth.models import User
 from .forms import RegistrationForm
 from .forms import ProfileForm
 
+#ログイン情報取得
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.utils import timezone
+
+
 def login_view(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -56,3 +62,17 @@ def profile_edit(request):
         else:
             form = ProfileForm(instance=request.user.profile)
         return render(request,'profile_edit.html', {'form': form})
+
+#ログイン情報取得
+@login_required
+def login_info(request):
+    user = request.user
+    login_time = user.last_login
+
+    # フロントエンドに返すデータを作成
+    data = {
+        'username': user.username,
+        'login_time': login_time.isoformat()
+    }
+
+    return JsonResponse(data)
