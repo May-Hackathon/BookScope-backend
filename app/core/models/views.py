@@ -39,12 +39,12 @@ def register_view(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST, request.FILES)
         if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            email = form.cleaned_data['email']
+            username = form.POST.get('username')
+            password = form.POST.get('password')
+            email = form.POST.get('email')
             User.objects.create_user(username=username, password=password, email=email)
             #登録完了後のリダイレクト先を指定
-            return redirect('login')
+            return redirect('login.html')
         else:
             form = RegistrationForm()
         return render(request, 'register.html', {'form': form})
