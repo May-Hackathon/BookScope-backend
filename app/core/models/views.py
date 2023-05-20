@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from .forms import RegistrationForm
+from .forms import ProfileForm
 
 def login_view(request):
     if request.method == 'POST':
@@ -44,8 +45,6 @@ def register_view(request):
 
 
 #アカウント情報管理機能
-from .forms import ProfileForm
-
 def profile_edit(request):
     if request.method == 'POST':
         form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)
