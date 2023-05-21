@@ -4,30 +4,31 @@ from django.contrib.auth.models import User
 from .forms import RegistrationForm
 from .forms import ProfileForm
 from django.contrib.auth.tokens import default_token_generator
+from rest_framework.views import APIView
 
 #ログイン情報取得
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.utils import timezone
 
+class LoginView(APIView):
+    def login_view(self, request):
+        if request.method == 'POST':
+            email = request.data.get('email')
+            password = request.data.get('password')
+            user = authenticate(request, email=email, password=password)
 
-def login_view(request):
-    if request.method == 'POST':
-        username = request.GET.get('username')
-        password = request.GET.get('password')
-        user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                token = generate_token(user)
+                return JsonResponse({'token': token})
 
-        if user is not None:
-            login(request, user)
-            token = generate_token(user)
-            return JsonResponse({'token': token})
-
+            else:
+                return JsonResponse({'error': 'Incorrect email address or password'})
+        
         else:
-            return JsonResponse({'error': 'ユーザ名またはパスワードが間違っています'})
-    
-    else:
-        return JsonResponse({'message': 'login successed'})
-    
+            return JsonResponse({'message': 'login successed'})
+        
 
 
 def generate_token(user):

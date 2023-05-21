@@ -13,4 +13,3 @@ class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['icon', 'instagram_account', 'twitter_account', 'facebook_account', 'bio']
-   
