@@ -16,6 +16,23 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from .views import registration_view, LoginView, logout_view, profile_edit
+from django.contrib.auth import views as auth_views
+
 urlpatterns = [
     path("admin/", admin.site.urls),
+
+    path('register/', registration_view, name='register'),
+    path('login/', LoginView.as_view(), name='login'),
+    path('logout/', logout_view, name='logout'),
+
+    #パスワードリセット
+    path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
+    path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
+    path('reset/<uid64>/<token>', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
+
+    #プロフィール管理機能
+    #プロフィール編集ページのURLパターンを指定
+    path('profile/edit/', profile_edit, name='profile_edit'),
 ]
