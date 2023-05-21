@@ -1,5 +1,4 @@
 #認証機能
-from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from .forms import RegistrationForm
@@ -21,13 +20,13 @@ def login_view(request):
         if user is not None:
             login(request, user)
             token = generate_token(user)
-            return JsonResponse({'token': token})     #ログイン成功後のリダイレクト先を指定
+            return JsonResponse({'token': token})
 
         else:
             return JsonResponse({'error': 'ユーザ名またはパスワードが間違っています'})
     
     else:
-        return render(request, 'login.html')    #login.htmlは仮
+        return JsonResponse({'message': 'login successed'})
     
 
 
@@ -43,7 +42,7 @@ def generate_token(user):
 
 def logout_view(request):
     logout(request)
-    return redirect('')     #ログアウト後のリダイレクト先を指定
+    return JsonResponse({'message': 'logout'})
 
 
 #ユーザ登録機能
@@ -55,11 +54,11 @@ def register_view(request):
             password = form.POST.get('password')
             email = form.POST.get('email')
             User.objects.create_user(username=username, password=password, email=email)
-            #登録完了後のリダイレクト先を指定
-            return redirect('login.html')
+            return JsonResponse({'message':'Registration successful'})
+        
         else:
             form = RegistrationForm()
-        return render(request, 'register.html', {'form': form})
+        return JsonResponse({'form': form})
 
 
 
@@ -69,8 +68,7 @@ def profile_edit(request):
         form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)
         if form.is_valid():
             form.save()
-            #プロフィール編集完了後のリダイレクト先を指定
-            return redirect('profile.html')
+            return JsonResponse({'message':'Profile updated successfully'})
 
         else:
             form = ProfileForm(instance=request.user.profile)
@@ -82,14 +80,19 @@ def profile_edit(request):
 
 #ログイン情報取得
 @login_required
-def login_info(request):
+def user_login_info(request):
     user = request.user
-    login_time = user.last_login
 
     # フロントエンドに返すデータを作成
-    data = {
+    login_info = {
         'username': user.username,
-        'login_time': login_time.isoformat()
+        'email':user.email,
+        'last_login':user.last_login,
+        'date_joined':user.date_joined,
+        'login_history':[]
     }
+    login_history = User.objects.filter(username=user.username).value('last_login')
+    for login in login_history:
+        login_info['login_history'].append(login['last_login'])
 
-    return JsonResponse(data)
+    return JsonResponse(login_info)
